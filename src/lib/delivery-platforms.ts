@@ -1,3 +1,16 @@
-export const DELIVERY_PLATFORMS = ["wolt"] as const
+import { DeliveryPlatform } from "./db/schema"
 
-export type DeliveryPlatform = (typeof DELIVERY_PLATFORMS)[number]
+export const DELIVERY_PLATFORMS: Record<
+  DeliveryPlatform,
+  {
+    name: string
+    url: string
+    imageUrl: string
+  }
+> = {
+  wolt: {
+    name: "Wolt",
+    url: "https://wolt.com",
+    imageUrl: "/delivery_platforms/walt.png",
+  },
+}

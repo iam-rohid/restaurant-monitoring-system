@@ -1,4 +1,4 @@
-import { DeliveryPlatform } from "./delivery-platforms"
+import { DeliveryPlatform } from "./db/schema"
 
 export type RestaurantListing = {
   slug: string
