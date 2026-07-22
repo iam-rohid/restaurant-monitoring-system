@@ -1,3 +1,4 @@
+import { localMinutes } from "@/helpers"
 import { db } from "@/lib/db"
 import {
   availabilityChecksTable,
@@ -9,19 +10,8 @@ import { TRPCError } from "@trpc/server"
 import { desc, eq } from "drizzle-orm"
 import z from "zod"
 import { baseProcedure, createTRPCRouter } from "../init"
-import { localMinutes } from "@/helpers"
 
 const STALE_AFTER_MS = 15 * 60 * 1000 // 3x the 5-min poll interval
-
-const VERDICTS = [
-  "available",
-  "unavailable_expected_open",
-  "closed",
-  "available_expected_closed",
-  "unknown",
-] as const
-
-export type Verdict = (typeof VERDICTS)[number]
 
 function expectedOpenNow(intervals: OpeningInterval[], nowMin: number) {
   return intervals.some(
@@ -41,7 +31,6 @@ export const listingsRouter = createTRPCRouter({
         expectedOpen: z.boolean().nullable(),
         checkedAt: z.date().nullable(),
         stale: z.boolean(),
-        verdict: z.enum(VERDICTS),
         openHoursToday: z
           .array(
             z.object({
@@ -86,7 +75,6 @@ export const listingsRouter = createTRPCRouter({
           checkedAt: null,
           stale: true,
           reason: "No checks recorded yet",
-          verdict: "unknown",
         }
       }
 
@@ -105,25 +93,13 @@ export const listingsRouter = createTRPCRouter({
           checkedAt: check.checkedAt,
           stale,
           reason: check.errorMessage || `Last check status ${check.status}`,
-          verdict: "unknown",
         }
       }
 
       const isAvailable = check.isAvailable
-      const verdict: Verdict =
-        expectedOpen === null
-          ? "unknown"
-          : isAvailable && expectedOpen
-            ? "available"
-            : !isAvailable && expectedOpen
-              ? "unavailable_expected_open"
-              : isAvailable && !expectedOpen
-                ? "available_expected_closed"
-                : "closed"
 
       return {
         isAvailable,
-        verdict,
         expectedOpen,
         checkedAt: check.checkedAt,
         stale,
