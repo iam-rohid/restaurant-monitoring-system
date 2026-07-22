@@ -1,7 +1,6 @@
 import { db } from "@/lib/db"
 import {
   availabilityChecksTable,
-  chainsTable,
   listingsTable,
   locationsTable,
   OpeningInterval,
@@ -10,6 +9,7 @@ import { TRPCError } from "@trpc/server"
 import { desc, eq } from "drizzle-orm"
 import z from "zod"
 import { baseProcedure, createTRPCRouter } from "../init"
+import { localMinutes } from "@/helpers"
 
 const STALE_AFTER_MS = 15 * 60 * 1000 // 3x the 5-min poll interval
 
@@ -21,18 +21,7 @@ const VERDICTS = [
   "unknown",
 ] as const
 
-type Verdict = (typeof VERDICTS)[number]
-
-function localMinutes(timezone: string, at = new Date()): number {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: timezone,
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  }).formatToParts(at)
-  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0)
-  return get("hour") * 60 + get("minute")
-}
+export type Verdict = (typeof VERDICTS)[number]
 
 function expectedOpenNow(intervals: OpeningInterval[], nowMin: number) {
   return intervals.some(
@@ -44,39 +33,6 @@ function expectedOpenNow(intervals: OpeningInterval[], nowMin: number) {
 }
 
 export const listingsRouter = createTRPCRouter({
-  listAll: baseProcedure
-    .input(z.object({ chainId: z.number() }))
-    .query(async ({ input: { chainId } }) => {
-      const [chain] = await db
-        .select()
-        .from(chainsTable)
-        .where(eq(chainsTable.id, chainId))
-      if (!chain) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Restaurant Chain not found",
-        })
-      }
-
-      const locations = await db
-        .select()
-        .from(locationsTable)
-        .where(eq(locationsTable.chainId, chain.id))
-
-      return await Promise.all(
-        locations.map(async (location) => {
-          const listings = await db
-            .select()
-            .from(listingsTable)
-            .where(eq(listingsTable.locationId, location.id))
-
-          return {
-            location,
-            listings,
-          }
-        })
-      )
-    }),
   getAvailabilityStatus: baseProcedure
     .input(z.object({ listingId: z.number() }))
     .output(

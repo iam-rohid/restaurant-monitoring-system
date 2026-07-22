@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "locations_chain_id_lat_lng_index" ON "locations" ("chain_id","lat","lng");

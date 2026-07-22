@@ -50,7 +50,10 @@ export const locationsTable = snakeCase.table(
       .references(() => chainsTable.id, { onDelete: "cascade" }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index().on(table.chainId)]
+  (table) => [
+    index().on(table.chainId),
+    uniqueIndex().on(table.chainId, table.lat, table.lng),
+  ]
 )
 
 export type Location = typeof locationsTable.$inferSelect

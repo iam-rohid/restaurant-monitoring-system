@@ -11,6 +11,6 @@ export const DELIVERY_PLATFORMS: Record<
   wolt: {
     name: "Wolt",
     url: "https://wolt.com",
-    imageUrl: "/delivery_platforms/walt.png",
+    imageUrl: "/delivery_platforms/wolt.png",
   },
 }
