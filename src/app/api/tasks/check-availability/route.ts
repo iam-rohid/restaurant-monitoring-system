@@ -6,10 +6,11 @@ import {
   listingsTable,
   locationsTable,
 } from "@/lib/db/schema"
+import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
 import { eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
-export const GET = async (req: NextRequest) => {
+export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const authHeader = req.headers.get("authorization")
   const cronSecret = process.env.CRON_SECRET
 
@@ -70,4 +71,4 @@ export const GET = async (req: NextRequest) => {
   }
 
   return NextResponse.json({ success: true, successCount, errorCount })
-}
+})
