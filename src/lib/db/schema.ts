@@ -29,6 +29,7 @@ export type AvailabilityCheckStatus =
 export const chainsTable = snakeCase.table("chains", {
   id: serial().primaryKey(),
   name: text().notNull(),
+  slug: text().notNull().unique(),
   image: text(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 })
@@ -58,7 +59,6 @@ export const listingsTable = snakeCase.table(
   "listings",
   {
     id: serial().primaryKey(),
-    name: text().notNull(),
     slug: text().notNull(),
     platform: deliveryPlatformEnum().notNull(),
     url: text().notNull(),
