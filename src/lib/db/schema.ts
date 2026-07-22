@@ -59,6 +59,7 @@ export const listingsTable = snakeCase.table(
   {
     id: serial().primaryKey(),
     name: text().notNull(),
+    slug: text().notNull(),
     platform: deliveryPlatformEnum().notNull(),
     url: text().notNull(),
     isActive: boolean().notNull().default(true),
@@ -67,7 +68,10 @@ export const listingsTable = snakeCase.table(
       .references(() => locationsTable.id, { onDelete: "cascade" }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex().on(table.locationId, table.platform)]
+  (table) => [
+    uniqueIndex().on(table.locationId, table.platform),
+    uniqueIndex().on(table.platform, table.slug),
+  ]
 )
 
 export type Listing = typeof listingsTable.$inferSelect
