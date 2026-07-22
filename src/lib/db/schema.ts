@@ -23,7 +23,7 @@ export const availabilityCheckStatusEnum = pgEnum("availability_check_status", [
   "parse_error",
 ])
 
-export type AvailabilityCheckStatusEnum =
+export type AvailabilityCheckStatus =
   (typeof availabilityCheckStatusEnum.enumValues)[number]
 
 export const chainsTable = snakeCase.table("chains", {
