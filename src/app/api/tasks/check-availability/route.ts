@@ -10,16 +10,8 @@ import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
 import { eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
-export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
-  const authHeader = req.headers.get("authorization")
-  const cronSecret = process.env.CRON_SECRET
-
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return new Response("Unauthorized", {
-      status: 401,
-    })
-  }
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const POST = verifySignatureAppRouter(async (_req: NextRequest) => {
   const activeListings = await db
     .select({
       id: listingsTable.id,
