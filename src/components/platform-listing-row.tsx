@@ -30,15 +30,19 @@ export function PlatformListingRow({ listing }: { listing: Listing }) {
   )
 
   const unmatchedAvailability =
-    availabilityStatusQuery.data?.expectedOpen !== null &&
-    availabilityStatusQuery.data?.expectedOpen !==
-      availabilityStatusQuery.data?.isAvailable
+    availabilityStatusQuery.isSuccess &&
+    availabilityStatusQuery.data.expectedOpen !== null &&
+    availabilityStatusQuery.data.expectedOpen !==
+      availabilityStatusQuery.data.isAvailable
 
   return (
     <div
       key={String(listing.id)}
       className={cn(
         "-mx-5 flex items-center gap-4 px-4 py-2 md:px-5",
+        availabilityStatusQuery.isSuccess &&
+          availabilityStatusQuery.data.isAvailable === null &&
+          "bg-destructive/10",
         unmatchedAvailability && "bg-amber-500/10"
       )}
     >
