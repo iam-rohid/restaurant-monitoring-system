@@ -77,7 +77,7 @@ export function PlatformListingRow({ listing }: { listing: Listing }) {
         ) : (
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {availabilityStatusQuery.data.isAvailable === null ? (
-              <Badge className="">Unknown</Badge>
+              <Badge variant="destructive">Can&apos;t Verify</Badge>
             ) : availabilityStatusQuery.data.isAvailable ? (
               <Badge className="bg-green-700 text-white dark:bg-green-500 dark:text-black">
                 <CheckIcon />
@@ -89,6 +89,14 @@ export function PlatformListingRow({ listing }: { listing: Listing }) {
                 Unavailable
               </Badge>
             )}
+
+            {availabilityStatusQuery.data.isAvailable === null &&
+              availabilityStatusQuery.data.reason && (
+                <p className="inline-flex items-center gap-1 text-sm text-destructive">
+                  <AlertTriangleIcon className="size-3.5" />
+                  {availabilityStatusQuery.data.reason}
+                </p>
+              )}
 
             {unmatchedAvailability && (
               <p className="inline-flex items-center gap-1 text-sm text-amber-700 dark:text-amber-500">
